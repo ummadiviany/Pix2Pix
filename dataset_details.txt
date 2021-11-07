@@ -1,0 +1,9 @@
+dataset		train	val
+
+edges2shoes	49825	200
+night2day -	20110	10
+anime		14224	3545
+cityscapes	2975	500
+maps 	- 	1096	1098
+facades		400	100
+
