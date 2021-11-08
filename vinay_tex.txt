@@ -1,0 +1,192 @@
+
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+\usepackage{setspace}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{graphicx}
+%\graphicspath{ {./figures/} }
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{comment}
+\usepackage{hyperref}
+\usepackage[english]{babel}
+\usepackage{biblatex}
+\usepackage{csquotes}
+\addbibresource{main.bib}
+
+%\usepackage{lineno}
+%\linenumbers
+
+%%%%%% Bibliography %%%%%%
+% Replace "sample" in the \addbibresource line below with the name of your .bib file.
+
+%\usepackage[style=ieee, 
+%citestyle=numeric-comp,
+%sorting=none]{biblatex}
+%\addbibresource{sample.bib}
+%\bibliographystyle{unsrt} 
+
+
+
+%%%%%% Title %%%%%%
+% Full titles can be a maximum of 200 characters, including spaces. 
+% Title Format: Use title case, capitalizing the first letter of each word, except for certain small words, such as articles and short prepositions
+\title{ Image-to-Image Translation with Conditional Adversarial Networks}
+
+%%%%%% Authors %%%%%%
+% Authors should be listed in order of contribution to the paper, by first name, then middle initial (if any), followed by last name.
+% Authors should be listed in the order in which they will appear in the published version if the manuscript is accepted. 
+% Use an asterisk (*) to identify the corresponding author, and be sure to include that person’s e-mail address. Use symbols (in this order: †, ‡, §, ||, ¶, #, ††, ‡‡, etc.) for author notes, such as present addresses, “These authors contributed equally to this work” notations, and similar information.
+% You can include group authors, but please include a list of the actual authors (the group members) in the Supplementary Materials.
+\author[]{Vinay Ummadi}
+
+%%%%%% Affiliations %%%%%%
+\affil[]{SMST, IIT Kharagpur, India.}
+
+
+%%%%%% Date %%%%%%
+% Date is optional
+\date{}
+
+%%%%%% Spacing %%%%%%
+% Use paragraph spacing of 1.5 or 2 (for double spacing, use command \doublespacing)
+\onehalfspacing
+
+\begin{document}
+
+\maketitle
+
+%%%%%% Abstract %%%%%%
+\begin{abstract}
+
+This project is an implementation project of the original paper Pix2Pix. Generative adversarial networks have become very popular due to their capability of capturing training data distribution. Image to image translation is a task where an image given in one domain is translated into another domain, Ex Image to draw. This task of the image-to-image translation would require heavily engineered loss functions. Conditional adversarial networks are one kind of GANs which require input-output pairs for learning. So they fall under supervised learning problems. Given the input-output pairs, these networks learn the mapping function from input to output.Now we have a generalized GAN that can do most image-to-image translation tasks with reasonable accuracy. Labels to maps, edges to objects, segmented maps to images are now accessible. For code and results, please visit \href{https://github.com/ummadiviany/Pix2Pix}{https://github.com/ummadiviany/Pix2Pix}.
+
+\end{abstract}
+
+%%%%%% Main Text %%%%%%
+
+\section{Introduction}
+There are many problems in the computer vision areas that require translating an image from one domain to another domain. For example, an image can be translated to edge map, semantic label map etc. In all of the tasks mentioned above, the structure of the problem is same. We have to learn a mapping function from input pixels to output pixels. Convolutional neural networks are used in most computer vision tasks. CNN's try to minimize a loss function that scores the predictions. In the case of translation, a new loss function has to be framed for every case. Although the setting of the problem is similar in most of the translation problems. The results will be blurry if we try to minimize the Euclidean distance between the generated and ground truth images. This is because of the averaging effect of minimizing Euclidean distance. Framing a loss function for sharp and realistic images will require good knowledge of the problem. We want an network which can automatically learn a loss function for the given problem. Fortunately, we have GANs \cite{goodfellow2014generative}, which do the same. GANs have a discriminator that discriminates between real and fake images and a generator that tries to generate real-looking images that deceive the discriminator. Blurry images will not be encouraged because the discriminator will catch them. As GANs learn a distribution of the data, CGANs \cite{mirza2014conditional} learn it in a conditional setting. 
+
+\section{Related Work}
+Often image to image to translation tasks are formulated as per-pixel classification or regression tasks. In a sense, they are considering each of the output pixels are conditionally independent to pixels in the input image. But this is not true since a group of pixels forms structures and shapes in an image. CGANs learn a structured loss function that penalizes the joint configuration.
+
+\section{Method}
+
+GANs learn the mapping function from random noise vector $z$ to output image $y$, $ G:z  \xrightarrow{}  y $. Conditional GANs learn the mapping function from $z$ to $y$ while given observed $x$ . $ G:{x,z} \xrightarrow{} y $. Generator $G$ is trained to produce real looking images which cannot be distinguished by discriminator $D$, which is trained to detect the generator fakes.
+
+\subsection{Objective}
+
+The objective of the conditional GAN can be expressed as (\ref{lcgan1}), where $G$ tries to minimize, and $D$ tries to maximize the same. i.e. $G^*$ = arg{ }$min_{G}${ }$ max_{D}$ $L_{cGAN}$ 
+
+
+\begin{equation}\label{lcgan1}
+   L_{cGAN}(G,D) = E_{x,y}[log(D(x,y)] + E_{x,z}[1-log(D(x,G(x,z)]
+\end{equation}
+
+Previous approaches have shown that the use of additional loss, such as $L2$ is beneficial. Now the generator's job is to generate realistic images and near ground truth in the $L2$ sense. Since $L1$ encourages less blurring it used instead of $L2$.
+
+\begin{equation}\label{l1}
+    L_{L1}(G) = E_{x,y,z}[||y - G(x,z) ||_{1}]
+\end{equation}
+
+So the final objective is 
+
+\begin{equation}\label{finalloss}
+   G^* = arg \hspace{2pt} min_{G}\hspace{2pt} max_{D}\hspace{2pt} L_{cGAN}(G,D) + \lambda L_{L1}(G)
+\end{equation}
+
+\subsection{Network architectures}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[]{gendisc}
+    \caption{Conditional setting to map edge $\xrightarrow{}$ photo. Discriminator learns to discriminate between generated and real tuples(edge, photo), while generator tries to fool discriminator by generating real-looking images. In conditional setting, both discriminator and generator observe input edge image.}
+    \label{fig:mesh1}
+\end{figure}
+
+The architecture skeleton for both generator $G$ and discriminator $D$ is adopted from DCGANs\cite{radford2016unsupervised}. Both  generator and discriminator use blocks of the form Convolution-BatchNorm-ReLU. Ck denotes Convolution-BatchNorm\cite{ioffe2015batch}-ReLU layer with k filters. CDk denote Convolution-BatchNorm-Dropout\cite{dropout}-ReLU layer with 50\% dropout rate. All convolutional filters have a 4x4 filter size and applied with a stride of 2.
+
+\subsubsection{Generator}
+In image-to-image translation tasks, the mapping is from high-resolution input image to a high-resolution output image. In addition to that, the appearance of the image changes, but the underlying structure is identical. The structure in the input is aligned with the structure in the output. An Encoder-decoder network is often used in which, the input is passed through a series of layers that gradually downsample until a bottleneck layer, after which the process is reversed. For many image translation tasks, shared low-level information between input and output must be shuttled across the network. To enable this, skip connections are added, following the shape of U-Net\cite{ronneberger2015unet} architecture. Skip connections are added between layer $i$ and layer $n-i$, where $n$ is the total number of layers.
+\newline\indent
+$\boldsymbol{Encoder:} C64-C128-C256-C512-C512-C512-C512-C512$
+\newline\indent
+$\boldsymbol{Decoder:} CD512-CD1024-CD1024-CD1024-CD1024-CD512-CD256-CD128$
+
+An additional convolutional layer followed by Tanh is used after the last layer of the decoder to map to the number of channels. In encoder all ReLUs are leaky with $\alpha=0.2$, but not in decoder.
+
+\subsubsection{Discriminator(PatchGAN)}
+PatchGAN is a discriminator architecture that operates only on the patches of the original image. It classifies an $N$x$N$ patch as real or fake. This discriminator network is applied convolutionally across the image, averaging all the responses produces a final output of D. The advantages of patchGAN are it has fewer parameters and runs faster.
+The 70x70 patch discriminator architecture is : C64-C128-C256-C512. An additional convolution layer is used to map to 1D output, followed by a sigmoid activation. All ReLUs are leaky with $\alpha=0.2$.
+
+\subsubsection{Optimization and inference}
+Optimization is performed while alternating one gradient descent step on $D$, then one step on G. Adam optimizer \cite{kingma2017adam} with a learning rate of 0.0002 and momentum parameters $\beta1$=0.5 and $\beta2$=0.999 are used.
+
+\section{Experiments}
+To explore the generality of conditional GANS, the testing is performed on a variety of tasks, including graphics, like photo generation, and vision tasks, like semantic segmentation.
+
+\subsection{Datasets}
+
+\begin{itemize}
+    \item Arieal photo $\xrightarrow{}$ Map dataset, from Kaggle \cite{pix2pix-dataset}\newline
+    Training examples : 1096,  Resolution : 600x600
+    \item Anime sketch $\xrightarrow{}$ Colourized anime sketch , Sketch colorization pair dataset from Kaggle \cite{anime-dataset}\newline
+    Training examples : 14224,  Resolution : 512x512
+\end{itemize}
+
+\subsection{Training details}
+A cloud machine in Paperspace  with  16 CPU cores, 30GB RAM and A NVIDIA Quadro P5000 16GB GPU is used for training. Different batch sizes are used depending on the dataset size to speed up the training process. Although the batch size of 1 is the best and shown by the authors \cite{isola2018imagetoimage}. 
+\begin{itemize}
+    \begin{description}
+        \item[Arieal photo $\xrightarrow{}$ Map] Maps dataset is a small dataset with only ~1100 examples. So, Random Color jitter with $p$=0.5 is applied to the maps datasets. Maps dataset is trained for 500 epochs with a batch size of 16. A validation set is used to check the performance of the generator.
+        
+        \item[Anime sketch $\xrightarrow{}$ Colourized  anime sketch] Anime dataset has a good number of examples and is trained for only 100 epochs with a batch size of 32. Tested on a subset of the anime test dataset.
+    \end{description}
+   \end{itemize}
+
+
+More results are available at \href{https://github.com/ummadiviany/Pix2Pix}{https://github.com/ummadiviany/Pix2Pix}
+
+\subsection{Evaluation metrics - Self evaluation}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    Score           &  Mean     & Standard Deviation\\
+    \hline
+    Translation     &   7.18    & 1.38              \\
+    \hline
+    Difference      &   2.4     & 1.17              \\
+    \hline
+    \end{tabular}
+    \caption{Translation and Difference scores}
+    \label{table:metric}
+\end{table}
+
+Evaluating the quality of generated images is still an open-ended problem. While authors have used real vs fake perceptual studies as one metric, where the human plausibility is the final goal. Since the experimenter can rate the translated images, this still seems a better option as of now.
+\newline\indent
+Evaluation of the translated images is done by myself while following the below process. Starting with a random sampling of 100 input-output pairs from the test set. Now input images are
+translated into the output domain using the generator. At this point, we have input-output pairs and respective translated images. The input image and translated image are visualized side by side. After looking in detail a \textit{translation score} is marked. Once the translation score is marked, ground truth in translating domain is visualized alongside the translated image, for which a \textit{difference score} is marked. The difference score emphasizes the differences between ground truth and translated in segmenting regions, painting colours etc.
+\newline\indent
+Both of these scores are between 0 and 10. A low translation score means, translated image significantly differs from the input image and does not even contain any details of expected domain. A high translation score means the translated image perfectly has all the details of the desired domain. A high translation score and low difference score are ideally expected. Results are shown in Table \ref{table:metric}.
+
+\subsection{Results}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.75]{result1}
+    \caption{Example results from maps and anime dataset.}
+    \label{fig:result1}
+\end{figure}
+Results seem to be pretty much close to actual results published by authors \cite{isola2018imagetoimage}.
+
+\section{Conclusion}
+From the results, Conditional GANs are promising for image-to-image translation tasks, which involve preserving structures. These networks learn a translation loss function, while given sufficient data without explicitly defining.
+
+
+\printbibliography
+
+\end{document}
