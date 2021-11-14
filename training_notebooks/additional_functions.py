@@ -20,7 +20,7 @@ def test_on_val_data( epoch, destination_dir, gen_model, validation_loader, devi
         
         outputs_fake = gen_model(inputs)
         res = torch.cat([inputs * 0.5 + 0.5,outputs * 0.5 + 0.5,outputs_fake*0.5 + 0.5],dim=2)
-        save_image(res, destination_dir + f"/input_label_gen_{epoch+688}.png")
+        save_image(res, destination_dir + f"input_label_gen_{epoch+1}.png")
 
     gen_model.train()
 
