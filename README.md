@@ -14,7 +14,7 @@ If you are intrested in going through the report click on this link [5 page brie
 |![](res/anime_res.png)|
 
 ## Evaluation 
-Please use this [evaluation notebook](pix2pix_evaluation.ipynb) to evaluate on sample images/new images using [pretrained weights](https://drive.google.com/drive/folders/1UIvTQdePZz_1pKI9KrErS4I3AhQyzAIL?usp=sharing) (~630MB each generator).
+Please use this **[evaluation notebook](pix2pix_evaluation.ipynb)** to evaluate on sample images/new images using [pretrained weights](https://drive.google.com/drive/folders/1UIvTQdePZz_1pKI9KrErS4I3AhQyzAIL?usp=sharing) (~630MB each generator).
 
 ```bash
 git clone https://github.com/ummadiviany/Pix2Pix
@@ -28,7 +28,7 @@ jupyter notebook
 Now open the **pix2pix_evaluation.ipynb** and run all the cells sequentially.
 
 ## Training
-Use the notebooks in the **[training_notebooks](Training_Notebook.ipynb)** folder. I have created seperate jupyter notebook for every dataset.
+Use this **[training_notebook](Training_Notebook.ipynb)**. I have created seperate jupyter notebook for every dataset.
 
 ```bash
 git clone https://github.com/ummadiviany/Pix2Pix
