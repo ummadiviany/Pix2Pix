@@ -28,13 +28,13 @@ jupyter notebook
 Now open the **pix2pix_evaluation.ipynb** and run all the cells sequentially.
 
 ## Training
-Use the notebooks in the **[training_notebooks](https://github.com/ummadiviany/Pix2Pix/tree/main/training_notebooks)** folder. I have created seperate jupyter notebook for every dataset.
+Use the notebooks in the **[training_notebooks](Training_Notebook.ipynb)** folder. I have created seperate jupyter notebook for every dataset.
 
 ```bash
 git clone https://github.com/ummadiviany/Pix2Pix
 ```
 ```bash
-cd Pix2Pix/training_notebooks
+cd Pix2Pix
 ```
 ```
 jupyter notebook
